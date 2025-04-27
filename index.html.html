@@ -1,0 +1,934 @@
+﻿
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding-top: 60px;
+        }
+        .titulo {
+            font-size: 25px;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .subtitulo {
+            font-size: 20px;
+        }
+
+        .carrinho {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+           
+        }
+        .item-carrinho {
+            display: flex;
+            flex-direction: column;
+            padding: 0px 0; /* reduzido de 10px para 5px */
+   
+         }
+
+        .item:last-child, .item-carrinho:last-child {
+            border-bottom: none;
+        }
+        .item button, .item-carrinho button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+           
+        }
+
+        .item-carrinho button {
+            background-color: #dc3545;
+        }
+
+        .total {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFFAFA;
+            font-size: 25px;
+            padding: 15px;
+            font-family: 'Roboto', sans-serif;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            margin: 0;
+        }
+
+        .whatsapp-btn {
+            background-color: #25d366;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            margin-right: 50px;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #20b858;
+        }
+
+        .whatsapp-btn img {
+            margin-right: 5px;
+        }
+
+        .item-carrinho .btn-Remover {
+            background-color: #dc3545;
+            color: white;         
+            font-size: 14px;
+            border: none;
+            margin-left: 0px; /* Ajustado para reduzir o espaço */
+            display: inline-block; /* Para alinhar com o texto */
+            vertical-align: middle; /* Alinha verticalmente com o texto */
+            margin-top: 3px; /* reduzido para ficar mais colado ao texto */
+          }
+
+        .button-group {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .container, .btn-Remover {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+        }
+
+        .totalcompra {
+            font-size: 14px;
+        }
+        .totalpagamento {
+            font-size: 25px;
+        }
+
+       .textescolher {
+            font-size: 12px; /* Tamanho da fonte pequena */  
+       }
+       .btnAlterar {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;            
+        }
+        .btnRemover {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;     
+                  
+        }
+         
+    </style>
+
+</head>
+<body>
+
+<!-- Barra superior com total da compra e botão de WhatsApp -->
+<div class="total">
+    <div>
+        <span class="totalcompra">Total da Compra:</span><br> 
+        R$ <span id="totalCarrinho">0,00</span>
+    </div>
+    <!-- Botão do WhatsApp -->
+    <button id="togglePedidosBtn" onclick="togglePedidos()" style="margin: 10px; padding: 10px;">Ver meu pedido</button>  
+    <button class="whatsapp-btn" onclick="onButtonClick(); enviarWhatsApp()"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" width="24" height="24">Enviar Pedido</button>
+</div>
+<br>
+    
+<div class="titulo">
+    <label><strong>Açaí da Vila</strong></label>
+</div>
+ 
+<!-- Carrinho de Compras -->
+<div class="carrinho">
+    <label class="subtitulo"><strong>Carrinho</strong></label>
+    
+<div id="itensCarrinho" style="display: none;"></div>
+
+</div>
+
+<!-- Cardápio -->
+
+<div class="container">  
+    
+<div class="item">       
+    <label class="subtitulo"><strong>Açaí</strong></label><br>
+   <label class="textescolher">Após escolher clique em adicinar</label><br>
+    <select id="acai-options" onchange="showSelectedAcai()">
+        <option value="">Escolher</option>
+        <option value="20.00" data="Açaí 1L">Açaí 1L R$ 20.00</option>
+        <option value="10.00" data="Açaí 500ml">Açaí 500ml R$ 10.00</option>
+        <option value="15.00" data="Açaí 750ml">Açaí 750ml R$ 15.00</option>
+    </select>
+    <br><br>     
+  <button  id="addAcai" onclick="addAcaiToCart()">Adicionar</button>
+    <br>
+      <br>
+   
+
+<div class="item"> 
+    <label class="subtitulo"><strong>Adicional</strong></label><br>
+       <label class="textescolher">Após escolher clique em adicinar</label><br>
+       <select id="adicionais-options" onchange="showSelectedAdicional()">
+        <option>Escolher</option>
+        <option  data="Bis">Bis</option>
+        <option  data="Amendoim">Amendoim</option>
+        <option  data="Paçoca">Paçoca</option>
+        <option  data="Gotas de chocolate">Gotas de chocolate</option>
+        <option  data="Flocos">Flocos</option>
+  
+    </select>
+    <br><br> 
+    <button id="addAdicional" onclick="addAdicionalToCart()">Adicionar</button>
+
+    <br> 
+   <br>
+
+     <div class="item"> 
+    <label class="subtitulo"><strong>Creme</strong></label><br>
+       <label class="textescolher">Após escolher clique em adicinar</label><br>
+       <select id="creme-options" onchange="showSelectedCreme()">
+        <option>Escolher</option>
+        <option  data="Ninho">Ninho</option>
+        <option  data="Avelâ">Avelâ</option>        
+    </select>
+    <br><br> 
+    <button id="addCreme" onclick="addCremeToCart()">Adicionar</button>
+
+    <br> 
+    <br>
+   <br> 
+    <br>
+   
+            <label class="subtitulo" for="forma-pagamento" id="forma-pagamento"><strong>Forma de Pagamento</strong></label><br>
+            <br>
+            <label for="pag-dinheiro">Quanto irá pagar em dinheiro?</label> <br>
+            <input type="text" id="pag-dinheiro" name="pag-dinheiro">
+            <br>
+            <br>
+            <label for="pag-pix">Quanto irá pagar no pix?</label> <br>
+            <input type="text" id="pag-pix" name="pag-pix">
+            <br>
+             <br>
+            <label for="pag-cartao">Quanto irá pagar no cartão?</label> <br>        
+            <input type="text" id="pag-cartao" name="pag-cartao">
+            <br>
+             <br>
+            <label><strong>Total da Compra:<br><span class="totalpagamento" id="totalCarrinhoPagamento">R$ 0,00</span></strong></label><br>
+             <br>
+            <label>Total do Pagamento: <span id="totalPago">0,00</span></label>
+            <br>
+            <label><span id="restante">0,00</span></label>
+            
+            <label>Troco: <span id="trocoCliente">0,00</span></label>
+  
+        </div>                     
+     <br>
+     <br> 
+      <br>
+
+
+      <!-- Campo Nome sempre visível -->
+    
+        <label class="subtitulo"><strong>Informe seu nome</strong></label><br>     
+        <br>
+        <label for="nome">Seu nome</label><br>
+        <input type="text" id="nome" required><br>
+     <br>
+     <br>
+      <br>
+
+<!-- Formulário de recebimento -->
+    <label class="subtitulo"><strong>Recebimento do pedido</strong></label><br>
+  <br>
+     <label>Escolha a forma do recebimento</label><br>
+    <select id="formaRecebimento" onchange="toggleEnderecoFields()">
+        <option value=""></option>
+        <option value="Retirada no local">Retirada no local</option>
+        <option value="Entrega">Entrega</option>
+    </select>
+
+      <br>  
+    <br>
+
+
+    <!-- Campos adicionais para entrega -->
+    <div id="enderecoFields" style="display: none;">
+        <label for="endereco">Endereço</label><br>
+        <input type="text" id="endereco" required><br>
+        <br>
+        <label for="bairro">Bairro</label><br>
+        <input type="text" id="bairro" required><br>
+         <br>
+        <label for="pontoreferencia">Ponto de referência</label><br>
+        <input type="text" id="pontoreferencia"><br>
+    </div>
+   </div>
+     <br>
+         
+
+<script>
+
+let total = 0;
+let carrinho = [];
+let numeroPedido = 1;
+let pedidoAtual = 1;
+
+function addAcaiToCart() {
+    let select = document.getElementById('acai-options');
+    let produto = select.options[select.selectedIndex].getAttribute('data');
+    let preco = parseFloat(select.value.replace(',', '.'));
+
+    // Verifica se produto não foi selecionado ou valor é zero
+    if (!produto || isNaN(preco) || preco <= 0) {
+        alert("Selecione um item válido!");
+        return;
+    }
+
+    if (!confirm(`Deseja adicionar o "${produto}" ao carrinho?`)) {
+        return;
+    }
+
+    let itensCarrinho = document.getElementById('itensCarrinho');
+    fazerMaisPedidos();
+
+    if (!carrinho[pedidoAtual - 1]) {
+        carrinho[pedidoAtual - 1] = [];
+
+        let pedidoContainer = document.createElement('div');
+        pedidoContainer.classList.add('pedido-container');
+        pedidoContainer.setAttribute('id', `pedido-${pedidoAtual}`);
+
+        let tituloPedido = document.createElement('h2');
+        tituloPedido.textContent = `Pedido ${pedidoAtual}`;
+        tituloPedido.classList.add('titulo-pedido');
+
+        let btnAlterar = document.createElement('button');
+        btnAlterar.textContent = "Alterar Pedido";
+        btnAlterar.classList.add('btnAlterar'); 
+        btnAlterar.onclick = function () {
+               alterarPedido(pedidoAtual);
+        };
+
+        let btnRemover = document.createElement('button');
+        btnRemover.textContent = "Remover Pedido";
+        btnRemover.classList.add('btnRemover'); 
+        btnRemover.onclick = function () {
+            removerPedido(pedidoAtual);
+        };
+
+        pedidoContainer.appendChild(tituloPedido);
+        pedidoContainer.appendChild(btnAlterar);
+        pedidoContainer.appendChild(btnRemover);
+        itensCarrinho.appendChild(pedidoContainer);
+    }
+
+    adicionarItem(produto, preco, pedidoAtual, "acai", true);
+    itensCarrinho.style.display = 'none';
+}
+
+
+
+function addAdicionalToCart() {
+    let select = document.getElementById('adicionais-options');
+    let selectedOption = select.options[select.selectedIndex];
+    let produto = selectedOption.getAttribute('data');
+
+    if (!produto || produto === "Escolher") {
+        alert("Selecione um item válido!");
+        return;
+    }
+
+    if (carrinho.length === 0 || !carrinho[pedidoAtual - 1]) {
+        alert("Para adicionar adicionais ao pedido:\n\n1. Adicionando um novo açaí\n2. Ou então vá em 'Ver meu pedido' depois em 'Alterar pedido'\n3. Depois, é só adicionar o adicional que você deseja");
+        return;
+    }
+
+    let adicionaisDoPedido = carrinho[pedidoAtual - 1].filter(item => item.tipo === 'adicional');
+
+    // Verifica se o adicional já foi adicionado
+    let adicionalRepetido = adicionaisDoPedido.some(item => item.nome === produto);
+    if (adicionalRepetido) {
+        alert(`O adicional "${produto}" já foi adicionado ao pedido ${pedidoAtual}`);
+        return;
+    }
+
+    // Verifica limite de 5 adicionais
+    if (adicionaisDoPedido.length >= 5) {
+        alert("Você pode adicionar no máximo 5 adicionais por pedido.");
+        return;
+    }
+
+    if (!confirm(`Deseja adicionar o adicional "${produto}" ao pedido ${pedidoAtual}?`)) {
+        return;
+    }
+
+    let preco = 0; // Adicional sem custo
+
+    adicionarItem(produto, preco, pedidoAtual, "adicional", false);
+    itensCarrinho.style.display = 'none';
+}
+
+function addCremeToCart() {
+    let select = document.getElementById('creme-options');
+    let selectedOption = select.options[select.selectedIndex];
+    let produto = selectedOption.getAttribute('data');
+
+    if (!produto || produto === "Escolher") {
+        alert("Selecione um item válido!");
+        return;
+    }
+      if (carrinho.length === 0 || !carrinho[pedidoAtual - 1]) {
+        alert("Para adicionar creme ao pedido:\n\n1. Adicionando um novo açaí\n2. Ou então vá em 'Ver meu pedido' depois em 'Alterar pedido'\n3. Depois, é só adicionar o creme que você deseja");
+        return;
+    }
+
+    let cremeDoPedido = carrinho[pedidoAtual - 1].filter(item => item.tipo === 'creme');
+
+    // Verifica se o adicional já foi adicionado
+    let cremeRepetido = cremeDoPedido.some(item => item.nome === produto);
+    if (cremeRepetido) {
+        alert(`O creme "${produto}" já foi adicionado ao pedido ${pedidoAtual}`);
+        return;
+    }
+
+    // Verifica limite de 5 adicionais
+    if (cremeDoPedido.length >= 5) {
+        alert("Você pode adicionar no máximo 5 adicionais por pedido.");
+        return;
+    }
+
+    if (!confirm(`Deseja adicionar o adicional "${produto}" ao pedido ${pedidoAtual}?`)) {
+        return;
+    }
+
+    let preco = 0; // Creme sem custo
+
+    adicionarItem(produto, preco, pedidoAtual, "creme", false);
+    itensCarrinho.style.display = 'none';
+}
+
+
+
+
+function fazerMaisPedidos() {
+    reorganizarPedidos();
+    numeroPedido++;
+    pedidoAtual = numeroPedido;
+    itensCarrinho.style.display = 'none';
+    
+}
+
+function alterarPedido(pedidoSelecionado) {
+    reorganizarPedidos();
+    pedidoAtual = pedidoSelecionado;
+    alert(`Agora você pode adicionar itens ao pedido ${pedidoSelecionado}`);
+}
+
+function reorganizarPedidos() {
+    let carrinhoReorganizado = [];
+    let novoNumeroPedido = 1;
+    let novoPedidoAtual = 0;
+
+    carrinho.forEach((pedido, index) => {
+        carrinhoReorganizado.push(pedido);
+        if (index + 1 === pedidoAtual) {
+            novoPedidoAtual = novoNumeroPedido;
+        }
+        novoNumeroPedido++;
+    });
+
+    carrinho = carrinhoReorganizado;
+    numeroPedido = novoNumeroPedido - 1;
+
+    if (novoPedidoAtual > 0) {
+        pedidoAtual = novoPedidoAtual;
+    }
+}
+
+const expirationDate = new Date(2025, 4, 10, 23, 59, 59);
+
+function checkExpiration() {
+    const currentDate = new Date();
+    if (currentDate >= expirationDate) {
+        alert('Esta página expirou! Entre em contato com o desenvolvedor 86 99463.3799');
+        const whatsappBtn = document.querySelector('.whatsapp-btn');
+        if (whatsappBtn) {
+            whatsappBtn.style.display = 'none';
+        }
+    }
+}
+
+function onButtonClick() {
+    checkExpiration();
+}
+
+function adicionarItem(nome, preco, pedido, tipo, isAcai) {
+    let novoItem = { nome, preco, pedido, tipo, quantidade: 1 };
+
+    if (!carrinho[pedido - 1]) {
+        carrinho[pedido - 1] = [];
+    }
+
+    if (isAcai) {
+        carrinho[pedido - 1].unshift(novoItem);
+    } else {
+        carrinho[pedido - 1].push(novoItem);
+    }
+
+    atualizarCarrinho();  
+}
+
+function atualizarCarrinho() {
+    const itensCarrinho = document.getElementById('itensCarrinho');
+    const totalCarrinho = document.getElementById('totalCarrinho');
+    const totalCarrinhoPagamento = document.getElementById('totalCarrinhoPagamento');
+    itensCarrinho.innerHTML = '';
+
+    // Variáveis para controlar os subtítulos
+    let exibidoAcai = false;
+    let exibidoAdicional = false;
+    let exibidoCreme = false;
+
+    total = 0; // Zera o total no início da atualização
+
+    if (carrinho.length === 0) {
+        itensCarrinho.innerHTML = '<p>Carrinho está vazio</p>';
+        totalCarrinho.textContent = '0,00';
+        totalCarrinhoPagamento.textContent = '0,00';
+        return;
+    }
+
+    carrinho.forEach((pedido, pedidoIndex) => {
+    let pedidoContainer = document.createElement('div');
+    pedidoContainer.classList.add('pedido-container');
+    pedidoContainer.setAttribute('id', `pedido-${pedidoIndex + 1}`);
+
+    let tituloPedido = document.createElement('h2');
+    tituloPedido.textContent = `Pedido ${pedidoIndex + 1}`;
+    tituloPedido.classList.add('titulo-pedido');
+
+    let btnAlterar = document.createElement('button');
+    btnAlterar.textContent = "Alterar Pedido";
+    btnAlterar.classList.add('btnAlterar'); 
+    btnAlterar.style.marginRight = "10px";
+    btnAlterar.onclick = function () {
+        alterarPedido(pedidoIndex + 1);
+
+    };
+
+    let btnRemover = document.createElement('button');
+    btnRemover.textContent = "Remover Pedido";
+    btnRemover.classList.add('btnRemover'); 
+    btnRemover.onclick = function () {
+        removerPedido(pedidoIndex + 1);
+    };
+
+    pedidoContainer.appendChild(tituloPedido);
+    pedidoContainer.appendChild(btnAlterar);
+    pedidoContainer.appendChild(btnRemover);
+
+    // Subtítulos por pedido
+    let exibidoAcai = false;
+    let exibidoAdicional = false;
+    let exibidoCreme = false;
+
+    pedido.forEach((item, index) => {
+        total += item.preco * item.quantidade;
+
+        let div = document.createElement('div');
+        div.classList.add('item-carrinho');
+
+        if (item.nome.includes('Açaí') && !exibidoAcai) {
+            let subtitulo = document.createElement('h3');
+            subtitulo.textContent = 'ml';
+            pedidoContainer.appendChild(subtitulo);
+            exibidoAcai = true;
+        }
+
+        if (item.tipo === 'adicional' && !exibidoAdicional) {
+           let subtitulo = document.createElement('h3');
+           subtitulo.textContent = 'Adicional';
+           pedidoContainer.appendChild(subtitulo);
+           exibidoAdicional = true;
+       }
+      
+         if (item.tipo === 'creme' && !exibidoCreme) {  
+                let subtitulo = document.createElement('h3');
+                subtitulo.textContent = 'Creme';  
+                pedidoContainer.appendChild(subtitulo);
+                exibidoCreme = true;
+            }
+
+
+        div.innerHTML = `
+            <div>
+                ${item.nome}
+               ${(item.tipo !== 'creme' && item.tipo !== 'adicional') ? `<div>${formatarBRL(item.preco * item.quantidade)}</div>` : ''}
+
+            </div>
+            <button class="btn-Remover" onclick="removerItem(${pedidoIndex + 1}, ${index})">Remover item</button>
+        `;
+
+        pedidoContainer.appendChild(div);
+    });
+
+    itensCarrinho.appendChild(pedidoContainer);
+});
+
+    totalCarrinho.textContent = formatarBRL(total);
+    totalCarrinhoPagamento.textContent = formatarBRL(total);
+    calcularTotalPago(); // Atualiza totais com base no valor final
+}     
+
+function formatarBRL(valor) {
+    return valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+
+
+
+function removerPedido(pedidoRemover) {
+    carrinho.splice(pedidoRemover - 1, 1);
+    
+    // Remove o elemento visual do DOM
+    const pedidoContainer = document.getElementById(`pedido-${pedidoRemover}`);
+    if (pedidoContainer) {
+        pedidoContainer.remove();
+    }
+
+    // Reorganiza os pedidos no array e no DOM
+    reorganizarPedidos();
+    atualizarCarrinho();
+
+    // Se o carrinho estiver vazio, resetar o número do pedido
+    if (carrinho.length === 0) {
+        numeroPedido = 1;
+        pedidoAtual = 1;
+    }
+}
+
+
+function removerItem(pedidoId, index) {
+    carrinho[pedidoId - 1].splice(index, 1);
+    if (carrinho[pedidoId - 1].length === 0) {
+        carrinho.splice(pedidoId - 1, 1);
+
+        // Se o pedido atual foi completamente removido, bloquear novo açaí até clicar em "Fazer mais pedidos"
+        if (pedidoAtual === pedidoId) {
+            pedidoAtual = 0;
+        }
+
+        reorganizarPedidos();
+    }
+    atualizarCarrinho();
+}
+
+
+function aplicarMascaraBRL(input) {
+    let valor = input.value.replace(/\D/g, ''); // Remove tudo o que não for número
+    valor = (valor / 100).toFixed(2) + ''; // Divide por 100 e mantém 2 casas decimais
+    valor = valor.replace(".", ","); // Troca o ponto decimal por vírgula
+    valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, "."); // Adiciona ponto a cada 3 dígitos à esquerda da vírgula
+
+    input.value = valor;
+}
+
+function togglePedidos() {
+    const itensCarrinho = document.getElementById('itensCarrinho');
+    itensCarrinho.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleEnderecoFields() {
+    const formaRecebimento = document.getElementById('formaRecebimento').value;
+    const enderecoFields = document.getElementById('enderecoFields');
+
+    if (formaRecebimento === 'Entrega') {
+        enderecoFields.style.display = 'block'; // Exibe campos de endereço
+    } else {
+        enderecoFields.style.display = 'none'; // Oculta campos de endereço
+    }
+}
+
+// Função para formatar valores no formato monetário brasileiro
+function formatarValorBRL(valor) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+}
+
+// Função para calcular o total pago, restante e troco
+function calcularTotalPago() {
+    const pagDinheiro = parseFloat(document.getElementById('pag-dinheiro').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const pagPix = parseFloat(document.getElementById('pag-pix').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const pagCartao = parseFloat(document.getElementById('pag-cartao').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+
+    const totalPago = pagDinheiro + pagPix + pagCartao;
+    document.getElementById('totalPago').textContent = formatarValorBRL(totalPago);
+
+    let restante = total - totalPago;
+    let troco = 0;
+
+    if (totalPago >= total) {
+        restante = 0;
+        troco = totalPago - total;
+    } else {
+        troco = 0;
+    }
+
+    // Exibe ou oculta o campo "Restante" com base no valor
+    const restanteElement = document.getElementById('restante');
+    if (restante > 0) {
+        restanteElement.style.display = 'block';  // Exibe se houver valor restante
+        restanteElement.textContent = `Ainda falta pagar: ${formatarValorBRL(restante)}`;
+    } else {
+        restanteElement.style.display = 'none';  // Oculta se não houver valor restante
+    }
+
+    document.getElementById('trocoCliente').textContent = formatarValorBRL(troco);
+}
+
+
+// Chama a função calcularTotalPago sempre que o valor de pagamento for alterado
+document.getElementById('pag-dinheiro').addEventListener('input', function() {
+    aplicarMascaraBRL(this);
+    calcularTotalPago();
+});
+document.getElementById('pag-pix').addEventListener('input', function() {
+    aplicarMascaraBRL(this);
+    calcularTotalPago();
+});
+document.getElementById('pag-cartao').addEventListener('input', function() {
+    aplicarMascaraBRL(this);
+    calcularTotalPago();
+});
+
+// Chama a função atualizarCarrinho ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    atualizarCarrinho();
+    toggleEnderecoFields(); // Verifica se deve mostrar os campos ao carregar
+});
+
+
+function toggleEnderecoFields() {
+    const formaRecebimento = document.getElementById('formaRecebimento').value;
+    const enderecoFields = document.getElementById('enderecoFields');
+
+    if (formaRecebimento === 'Entrega') {
+        enderecoFields.style.display = 'block'; // Exibe campos de endereço
+    } else {
+        enderecoFields.style.display = 'none'; // Oculta campos de endereço
+    }
+}
+
+// Função para formatar valores no formato monetário brasileiro
+function formatarValorBRL(valor) {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+}
+
+// Função para calcular o total pago, restante e troco
+function calcularTotalPago() {
+    const pagDinheiro = parseFloat(document.getElementById('pag-dinheiro').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const pagPix = parseFloat(document.getElementById('pag-pix').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const pagCartao = parseFloat(document.getElementById('pag-cartao').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+
+    const totalPago = pagDinheiro + pagPix + pagCartao;
+    document.getElementById('totalPago').textContent = formatarValorBRL(totalPago);
+
+    let restante = total - totalPago;
+    let troco = 0;
+
+    if (totalPago >= total) {
+        restante = 0;
+        troco = totalPago - total;
+    } else {
+        troco = 0;
+    }
+
+    // Exibe ou oculta o campo "Restante" com base no valor
+    const restanteElement = document.getElementById('restante');
+    if (restante > 0) {
+        restanteElement.style.display = 'block';  // Exibe se houver valor restante
+        restanteElement.textContent = `Ainda falta pagar: ${formatarValorBRL(restante)}`;
+    } else {
+        restanteElement.style.display = 'none';  // Oculta se não houver valor restante
+    }
+
+    document.getElementById('trocoCliente').textContent = formatarValorBRL(troco);
+}
+
+// Chama a função calcularTotalPago sempre que o valor de pagamento for alterado
+document.getElementById('pag-dinheiro').addEventListener('input', function() {
+    aplicarMascaraBRL(this);
+    calcularTotalPago();
+});
+document.getElementById('pag-pix').addEventListener('input', function() {
+    aplicarMascaraBRL(this);
+    calcularTotalPago();
+});
+document.getElementById('pag-cartao').addEventListener('input', function() {
+    aplicarMascaraBRL(this);
+    calcularTotalPago();
+});
+
+// Chama a função atualizarCarrinho ao carregar a página
+document.addEventListener('DOMContentLoaded', () => {
+    atualizarCarrinho();
+    toggleEnderecoFields(); // Verifica se deve mostrar os campos ao carregar
+});
+
+
+function enviarWhatsApp() {
+    const nome = document.getElementById('nome').value.trim();
+    const formaRecebimento = document.getElementById('formaRecebimento').value;
+    const endereco = document.getElementById('endereco').value.trim();
+    const bairro = document.getElementById('bairro').value.trim();
+    const pontoreferencia = document.getElementById('pontoreferencia').value.trim();
+    const pagDinheiro = parseFloat(document.getElementById('pag-dinheiro').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const pagPix = parseFloat(document.getElementById('pag-pix').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const pagCartao = parseFloat(document.getElementById('pag-cartao').value.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+
+    const totalPago = pagDinheiro + pagPix + pagCartao;
+    const restante = total - totalPago;
+
+    if (carrinho.length === 0) {
+        alert("O carrinho está vazio");
+        return;
+    }
+
+    if (!nome) {
+        alert('O seu nome é obrigatório.');
+        document.getElementById('nome').focus();
+        return;
+    }
+
+    if (!formaRecebimento) {
+        alert('Escolha a forma de recebimento do pedido.');
+        document.getElementById('formaRecebimento').focus();
+        return;
+    }
+
+    if (formaRecebimento === 'Entrega') {
+        if (!endereco) {
+            alert('O endereço é obrigatório para entregas.');
+            document.getElementById('endereco').focus();
+            return;
+        }
+
+        if (!bairro) {
+            alert('O bairro é obrigatório para entregas.');
+            document.getElementById('bairro').focus();
+            return;
+        }
+    }
+
+    if (restante > 0) {
+        alert(`Ainda falta pagar: R$ ${restante.toFixed(2)}`);
+        document.getElementById('pag-dinheiro').focus();
+        return;
+    }
+
+    if (pagDinheiro > 0 || pagPix > 0 || pagCartao > 0) {
+        alert("LEIA AS INSTRUÇÕES\nNão altere a mensagem!\nAo clicar em OK você será direcionado para o WhatsApp.\nÉ só escolher continuar ou iniciar conversa.\nPronto depois é só enviar o pedido.\nAgora clique em OK para ser direcionado para o WhatsApp.");
+    }
+
+    const data = new Date();
+    const dataFormatada = data.toLocaleDateString('pt-BR');
+    const horaFormatada = data.toLocaleTimeString('pt-BR');
+
+    let mensagem = `Açaí da Vila\n${dataFormatada} ${horaFormatada}`;
+
+    carrinho.forEach((pedido, index) => {
+        mensagem += `\n\nPedido ${index + 1}:\n`;
+        let exibidoAdicional = false;
+        let exibidoCreme = false;
+
+        pedido.forEach(item => {
+            if (item.tipo === 'creme' && !exibidoCreme) {
+                mensagem += `\n\nCreme:`;
+                exibidoCreme = true;
+            }
+
+            if (item.tipo === 'adicional' && !exibidoAdicional) {
+                mensagem += `\n\nAdicional:`;
+                exibidoAdicional = true;
+            }
+
+            if (item.tipo === 'creme' || item.tipo === 'adicional') {
+                mensagem += `\n${item.nome}`;
+            } else {
+                const valorTotal = item.preco * item.quantidade;
+                mensagem += `${item.nome}\nR$ ${formatarBRL(valorTotal)}`;
+            }
+        });
+    });
+
+    mensagem += `\n\nTotal da compra:\nR$ ${formatarBRL(total)}\n\n`;
+
+    mensagem += `Formas de pagamento:\n`;
+    if (pagDinheiro > 0) mensagem += `Dinheiro: R$ ${pagDinheiro.toFixed(2)}\n`;
+    if (pagPix > 0) mensagem += `Pix: R$ ${pagPix.toFixed(2)}\n`;
+    if (pagCartao > 0) mensagem += `Cartão: R$ ${pagCartao.toFixed(2)}\n`;
+
+    mensagem += `\nValor total das formas\nde pagamento: R$ ${totalPago.toFixed(2)}\n`;
+
+    const troco = totalPago - total;
+    mensagem += `Troco: R$ ${troco.toFixed(2)}\n\n`;
+
+    mensagem += `Nome do cliente:\n${nome}\n\n`;
+    mensagem += `Recebimento do pedido:\n${formaRecebimento}\n`;
+
+    if (formaRecebimento === 'Entrega') {
+        mensagem += `\nEndereço: ${endereco}\nBairro: ${bairro}\n`;
+        if (pontoreferencia) {
+            mensagem += `Ponto de referência: ${pontoreferencia}\n`;
+        }
+    }
+
+    if (formaRecebimento === 'Entrega' && troco > 0) {
+        mensagem += `\nObservação:\nLevar o troco do cliente\n`;
+    }
+
+    if (formaRecebimento === 'Entrega' && pagCartao > 0) {
+        mensagem += `\nObservação:\nLevar a maquininha de cartão\n`;
+    }
+
+    if (pagPix > 0) {
+        mensagem += `\nObservação:\nEnviar o comprovante pix\n`;
+    }
+
+    mensagem += `\nNão edite a mensagem!\nFaça as alterações no cardápio e envie novamente.\n`;
+
+    const url = `https://web.whatsapp.com/send?phone=5586994633799&text=${encodeURIComponent(mensagem)}`;
+    window.open(url, '_blank');
+}
+
+</script>
+
+</body>
+</html>
